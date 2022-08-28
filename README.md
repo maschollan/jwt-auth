@@ -21,44 +21,99 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+## JWT AUTH Simple
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+this is a simple jwt auth for laravel 8
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+clone this project
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+git clone https://github.com/maschollan/jwt-auth.git
+```
+copy .env.example to .env
 
-### Premium Partners
+```bash
+cp .env.example .env
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+install composer
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+generate key
 
-## Code of Conduct
+```bash
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+migrate database
 
-## Security Vulnerabilities
+```bash
+php artisan migrate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Usage
+
+run server
+
+```bash
+php artisan serve
+```
+
+open postman or other endpoint test  http://localhost:8000/api/register with method POST
+
+```json
+{
+    "name": "maschollan",
+    "email": "maschollan@mail.com",
+    "password": "Password123",
+}
+```
+
+open postman or other endpoint test  http://localhost:8000/api/login with method POST
+
+```json
+{
+    "email": "maschollan@mail.com",
+    "password": "Password123",
+}
+```
+
+and get token like this 
+
+```json
+{
+    "success": true,
+    "message": "User successfully logged in",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNjYxNjk1ODUxLCJleHAiOjE2NjE2OTk0NTEsIm5iZiI6MTY2MTY5NTg1MSwianRpIjoic2lkc0JxbmRuc0RpR2xqQSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.B4xl4cJlGlJUGNlxDiaoMCr2xoW7m_qzbqHFL8TZnDQ"
+}
+```
+
+include token as parameter to access endpoint like 
+
+``` url
+https://localhost:8000/api/user?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNjYxNjk1NDExLCJleHAiOjE2NjE2OTkwMTEsIm5iZiI6MTY2MTY5NTQxMSwianRpIjoiZElrZzBvUmIyV3VObDMyQyIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.kIBklh4qYFVZZ2JZwzACeAzSUECKKA7FWqyiUjbGeTc 
+```
+with method GET and respon will be like this
+```json
+{
+    "success": true,
+    "message": "success get user data",
+    "data": {
+        "id": 1,
+        "name": "maschollan",
+        "email": "maschollan@mail.com",
+        "email_verified_at": null,
+        "created_at": "2022-08-28T13:57:07.000000Z",
+        "updated_at": "2022-08-28T13:57:07.000000Z"
+    }
+}
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project create with the Laravel framework and this is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
