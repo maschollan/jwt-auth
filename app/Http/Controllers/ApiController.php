@@ -57,7 +57,6 @@ class ApiController extends Controller
                 ], 400);
             }
         } catch (JWTException $e) {
-            return $validator->validated();
             return response()->json([
                 'success' => false,
                 'message' => 'Could not create token.',
