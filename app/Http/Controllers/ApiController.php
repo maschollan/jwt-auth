@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -14,11 +15,14 @@ class ApiController extends Controller
 {
     public function register(Request $request)
     {
-        $data = $request->only('name', 'email', 'password');
+        $data = $request->only('name', 'email', 'password', 'alamat', 'hobi', 'sekolah');
         $validator = Validator::make($data, [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:8|max:50|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
+            'alamat' => 'required|string',
+            'hobi' => 'required|string',
+            'sekolah' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -64,10 +68,13 @@ class ApiController extends Controller
             ], 500);
         }
 
+        $user = Auth::user();
+
         return response()->json([
             'success' => true,
             'message' => 'User successfully logged in',
             'token' => $token,
+            'data' => $user,
         ]);
     }
 
@@ -116,10 +123,45 @@ class ApiController extends Controller
 
     public function update_user(Request $request, $id)
     {
-        $data = $request->only('name', 'email', 'password', 'new_password', 'password_confirmation');
+        $data = $request->only('name', 'email', 'alamat', 'hobi', 'sekolah');
         $validator = Validator::make($data, [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users,email,' . $id,
+            'alamat' => 'required|string',
+            'hobi' => 'required|string',
+            'sekolah' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()]);
+        }
+
+        $user = User::find($id);
+        if ($user) {
+            $user->name = $validator->validated()['name'];
+            $user->email = $validator->validated()['email'];
+            $user->alamat = $validator->validated()['alamat'];
+            $user->hobi = $validator->validated()['hobi'];
+            $user->sekolah = $validator->validated()['sekolah'];
+            $user->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User successfully updated',
+                'data' => $user
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found',
+            ]);
+        }
+    }
+
+    public function change_pass(Request $request, $id)
+    {
+        $data = $request->only('password', 'new_password', 'password_confirmation');
+        $validator = Validator::make($data, [
             'password' => 'required|string',
             'new_password' => 'required|string|min:8|max:50|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
             'password_confirmation' => 'required|same:new_password',
@@ -132,15 +174,12 @@ class ApiController extends Controller
         $user = User::find($id);
         if ($user) {
             if (password_verify($validator->validated()['password'], $user->password)) {
-                $user->name = $validator->validated()['name'];
-                $user->email = $validator->validated()['email'];
                 $user->password = bcrypt($validator->validated()['new_password']);
                 $user->save();
 
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'User successfully updated',
-                    'data' => $user
+                    'message' => 'Password successfully updated',
                 ]);
             } else {
                 return response()->json([
